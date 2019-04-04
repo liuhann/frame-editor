@@ -1,6 +1,6 @@
 import { getElementStyle } from 'style-editor/src/utils/styles'
-const myReuseableStylesheet = document.createElement('style')
-document.head.appendChild(this.myReuseableStylesheet)
+let myReuseableStylesheet = document.createElement('style')
+document.head.appendChild(myReuseableStylesheet)
 function addKeyFrames (name, frames) {
   let pos = myReuseableStylesheet.length
   myReuseableStylesheet.insertRule('@keyframes ' + name + '{' + frames + '}', pos)
@@ -25,11 +25,18 @@ function generateKeyFrames (frames) {
   return framesInline.join('')
 }
 
+function refreshStyle () {
+  document.head.removeChild(myReuseableStylesheet)
+  myReuseableStylesheet = document.createElement('style')
+  document.head.appendChild(myReuseableStylesheet)
+}
+
 function generateStyleClass (animation) {
   addAnimation(animation)
   addKeyFrames(animation.name, generateKeyFrames(animation.frames))
 }
 export {
   addKeyFrames,
+  refreshStyle,
   generateStyleClass
 }

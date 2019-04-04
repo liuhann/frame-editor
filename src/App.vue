@@ -3,15 +3,20 @@
     <frames-config :animation="animation"></frames-config>
     <div id="preview">
       <div id="box" :class="boxClass"></div>
+      <el-button @click="play">播放</el-button>
     </div>
   </div>
 </template>
 
 <script>
+import Vue from 'vue'
+import { Button } from 'element-ui'
 import FramesConfig from './FramesConfig'
 import clone from 'clone'
 import FRAME from './model/frame'
-import { generateStyleClass } from './keyframe'
+import { generateStyleClass, refreshStyle } from './keyframe'
+
+Vue.use(Button)
 
 export default {
   name: 'app',
@@ -19,10 +24,7 @@ export default {
     FramesConfig
   },
   computed: {
-    boxClass () {
-      generateStyleClass(this.animation)
-      return this.animations.name
-    }
+    
   },
   data () {
     const frames = []
@@ -31,6 +33,7 @@ export default {
     p100.percent = 100
     frames.push(p100)
     return {
+      boxClass: '',
       animation: {
         name: '',
         duration: 600,
@@ -39,6 +42,16 @@ export default {
         infinite: false,
         frames: frames
       }
+    }
+  },
+  methods: {
+    play () {
+      refreshStyle()
+      generateStyleClass(this.animation)
+      this.boxClass = ''
+      this.$nextTick(() => {
+        this.boxClass = this.animation.name
+      })
     }
   }
 }
