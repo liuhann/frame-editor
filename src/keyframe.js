@@ -1,9 +1,25 @@
 import { getElementStyle } from 'style-editor/src/utils/styles'
-let myReuseableStylesheet = document.createElement('style')
-document.head.appendChild(myReuseableStylesheet)
+
+var sheet = (function () {
+  // Create the <style> tag
+  var style = document.createElement('style')
+
+	// Add a media (and/or media query) here if you'd like!
+	// style.setAttribute("media", "screen")
+	// style.setAttribute("media", "only screen and (max-width : 1024px)")
+
+	// WebKit hack :(
+	style.appendChild(document.createTextNode(''))
+
+	// Add the <style> element to the page
+	document.head.appendChild(style)
+
+	return style.sheet
+})()
 function addKeyFrames (name, frames) {
-  let pos = myReuseableStylesheet.length
-  myReuseableStylesheet.insertRule('@keyframes ' + name + '{' + frames + '}', pos)
+  let pos = sheet.length
+  const rule = '@keyframes ' + name + '{' + frames + '}'
+  sheet.insertRule(rule, pos)
 }
 
 /**
@@ -12,31 +28,27 @@ function addKeyFrames (name, frames) {
  * @param animation
  */
 function addAnimation (animation) {
-  let pos = myReuseableStylesheet.length
-  myReuseableStylesheet.insertRule(`.${animation.name} {
-    animation: ${animation.name} ${animation.duration}ms ${animation.timing} ${animation.infinite ? 'infinite': animation.iteration} both
-  }`, pos)
+  let pos = sheet.length
+  const rule = `.${animation.name} {
+    animation: ${animation.name} ${animation.duration}ms ${animation.timing} ${animation.infinite ? 'infinite' : animation.iteration} both
+  }`
+  sheet.insertRule(rule, pos)
 }
 function generateKeyFrames (frames) {
   const framesInline = []
   for (let frame of frames) {
     framesInline.push(`${frame.percent}%{${getElementStyle(frame)}`)
   }
+  debugger
   return framesInline.join('')
 }
 
-function refreshStyle () {
-  document.head.removeChild(myReuseableStylesheet)
-  myReuseableStylesheet = document.createElement('style')
-  document.head.appendChild(myReuseableStylesheet)
-}
-
 function generateStyleClass (animation) {
-  addAnimation(animation)
   addKeyFrames(animation.name, generateKeyFrames(animation.frames))
+  addAnimation(animation)
 }
+window.sheet1 = sheet
 export {
   addKeyFrames,
-  refreshStyle,
   generateStyleClass
 }

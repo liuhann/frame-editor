@@ -35,7 +35,7 @@ export default {
     return {
       boxClass: '',
       animation: {
-        name: '',
+        name: 'myAnimation',
         duration: 600,
         iteration: 1,
         timing: 'linear',
@@ -46,7 +46,6 @@ export default {
   },
   methods: {
     play () {
-      refreshStyle()
       generateStyleClass(this.animation)
       this.boxClass = ''
       this.$nextTick(() => {
