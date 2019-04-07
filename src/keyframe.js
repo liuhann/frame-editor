@@ -1,22 +1,23 @@
 import { getElementStyle } from 'style-editor/src/utils/styles'
 
-var sheet = (function () {
-  // Create the <style> tag
-  var style = document.createElement('style')
+function createSheet () {
+ // Create the <style> tag
+ var style = document.createElement('style')
+ 
+   // Add a media (and/or media query) here if you'd like!
+   // style.setAttribute("media", "screen")
+   // style.setAttribute("media", "only screen and (max-width : 1024px)")
+ 
+   // WebKit hack :(
+   style.appendChild(document.createTextNode(''))
+ 
+   // Add the <style> element to the page
+   document.head.appendChild(style)
 
-	// Add a media (and/or media query) here if you'd like!
-	// style.setAttribute("media", "screen")
-	// style.setAttribute("media", "only screen and (max-width : 1024px)")
+   return style.sheet
+}
 
-	// WebKit hack :(
-	style.appendChild(document.createTextNode(''))
-
-	// Add the <style> element to the page
-	document.head.appendChild(style)
-
-	return style.sheet
-})()
-function addKeyFrames (name, frames) {
+function addKeyFrames (sheet, name, frames) {
   let pos = sheet.length
   const rule = '@keyframes ' + name + '{' + frames + '}'
   sheet.insertRule(rule, pos)
@@ -27,28 +28,37 @@ function addKeyFrames (name, frames) {
 }
  * @param animation
  */
-function addAnimation (animation) {
+function addAnimation (sheet, animation) {
   let pos = sheet.length
   const rule = `.${animation.name} {
     animation: ${animation.name} ${animation.duration}ms ${animation.timing} ${animation.infinite ? 'infinite' : animation.iteration} both
   }`
   sheet.insertRule(rule, pos)
 }
+
 function generateKeyFrames (frames) {
   const framesInline = []
   for (let frame of frames) {
-    framesInline.push(`${frame.percent}%{${getElementStyle(frame)}`)
+    framesInline.push(`${frame.percent}%{${getElementStyle(frame)}}`)
   }
-  debugger
   return framesInline.join('')
 }
 
-function generateStyleClass (animation) {
-  addKeyFrames(animation.name, generateKeyFrames(animation.frames))
-  addAnimation(animation)
+function clearAnimation (sheet) {
+  let pos = sheet.length - 1
+  while (pos >= 0) {
+    sheet.deleteRule(pos)
+    pos --
+  }
 }
-window.sheet1 = sheet
+
+function addAnimationStyle (sheet, animation) {
+  addKeyFrames(sheet, animation.name, generateKeyFrames(animation.frames))
+  addAnimation(sheet, animation)
+}
+
 export {
-  addKeyFrames,
-  generateStyleClass
+  createSheet,
+  clearAnimation,
+  addAnimationStyle
 }

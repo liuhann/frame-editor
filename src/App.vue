@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <frames-config :animation="animation"></frames-config>
+    <frames-config :animation="animation" class="config"></frames-config>
     <div id="preview">
       <div id="box" :class="boxClass"></div>
-      <el-button @click="play">播放</el-button>
+      <div class="btns">
+        <el-button @click="play" circle icon="el-icon-refresh"></el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -14,7 +16,8 @@ import { Button } from 'element-ui'
 import FramesConfig from './FramesConfig'
 import clone from 'clone'
 import FRAME from './model/frame'
-import { generateStyleClass, refreshStyle } from './keyframe'
+import { createSheet, addAnimationStyle, clearAnimation} from './keyframe'
+import { setTimeout } from 'timers';
 
 Vue.use(Button)
 
@@ -44,13 +47,19 @@ export default {
       }
     }
   },
+
+  mounted () {
+    this.sheet = createSheet()
+  },
   methods: {
     play () {
-      generateStyleClass(this.animation)
+      console.log(this.sheet)
+      clearAnimation(this.sheet)
+      addAnimationStyle(this.sheet, this.animation)
       this.boxClass = ''
-      this.$nextTick(() => {
+      setTimeout( () => {
         this.boxClass = this.animation.name
-      })
+      }, 400)
     }
   }
 }
@@ -83,16 +92,23 @@ html, body {
   .animation-config {
     overflow-y: auto;
     width: 320px;
+    padding-right: 10px;
+    background-color: #F5F5F5;
   }
 }
 
 #preview {
+  position: relative;
+  flex: 1;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
   align-items: center;
-  padding: 0 0 0 290px;
-  margin: 0;
+  .btns {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
 }
 
 ::-webkit-scrollbar {

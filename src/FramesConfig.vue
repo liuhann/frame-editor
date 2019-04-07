@@ -26,7 +26,21 @@
         placement="top"
         v-for="(frame, index) in animation.frames"
         :key="index"
+        :hide-timestamp="true"
         :timestamp="frame.percent + '%'">
+        <div class="button-percent">
+          {{frame.percent}}%
+          <div class="btns" style="float:right;margin-top: -7px;">
+            <el-button v-if="frame.percent !== 100" size="mini" icon="el-icon-plus"
+            type="text" @click="appendFrame(index)"></el-button>
+            <el-button v-if="!(frame.percent === 100 || frame.percent === 0)" size="mini" icon="el-icon-delete" 
+            type="text" @click="removeFrame(index)"></el-button>
+            <el-button v-if="currentFrameIndex === index" size="mini" icon="el-icon-arrow-down"
+            type="text" @click="closeFrame"></el-button>
+            <el-button v-if="currentFrameIndex !== index" size="mini" icon="el-icon-arrow-right"
+            type="text" @click="editFrame(index)"></el-button>
+          </div>
+        </div>
         <div class="frame-dialog-content" v-if="currentFrameIndex === index">
           <item-block label="进度">
             <el-input-number :disabled="frame.percent === 100 || frame.percent === 0" size="mini" v-model="frame.percent" :step="5" :max="100" :min="0"></el-input-number>
@@ -34,9 +48,6 @@
           <edit-transform v-model="frame.transform"></edit-transform>
           <edit-clip-path v-model="frame.clip"></edit-clip-path>
         </div>
-        <el-button v-if="frame.percent !== 100" size="mini" type="text" @click="appendFrame(index)">新增</el-button>
-        <el-button v-if="currentFrameIndex !== index" size="mini" type="text" @click="editFrame(index)">编辑</el-button>
-        <el-button v-if="!(frame.percent === 100 || frame.percent === 0)" size="mini" type="danger" @click="removeFrame(index)">删除</el-button>
       </el-timeline-item>
     </el-timeline>
   </div>
@@ -86,6 +97,9 @@ export default {
     removeFrame (index) {
       this.animation.frames.splice(index, 1)
       this.currentFrameIndex = index - 1
+    },
+    closeFrame () {
+      this.currentFrameIndex = -1
     }
   }
 }
@@ -98,6 +112,11 @@ export default {
   }
   .time-line-item {
     text-align: left;
+  }
+  .button-percent {
+    color: #999;
+    font-size: 12px;
+    line-height: 20px;
   }
 }
 </style>
