@@ -1,20 +1,18 @@
 import { getElementStyle } from 'style-editor/src/utils/styles'
 
 function createSheet () {
- // Create the <style> tag
- var style = document.createElement('style')
- 
-   // Add a media (and/or media query) here if you'd like!
-   // style.setAttribute("media", "screen")
-   // style.setAttribute("media", "only screen and (max-width : 1024px)")
- 
-   // WebKit hack :(
-   style.appendChild(document.createTextNode(''))
- 
-   // Add the <style> element to the page
-   document.head.appendChild(style)
+  // Create the <style> tag
+  var style = document.createElement('style')
+  // Add a media (and/or media query) here if you'd like!
+  // style.setAttribute("media", "screen")
+  // style.setAttribute("media", "only screen and (max-width : 1024px)")
 
-   return style.sheet
+  // WebKit hack :(
+  style.appendChild(document.createTextNode(''))
+
+  // Add the <style> element to the page
+  document.head.appendChild(style)
+  return style.sheet
 }
 
 function addKeyFrames (sheet, name, frames) {
@@ -38,6 +36,7 @@ function addAnimation (sheet, animation) {
 
 function generateKeyFrames (frames) {
   const framesInline = []
+  debugger
   for (let frame of frames) {
     framesInline.push(`${frame.percent}%{${getElementStyle(frame)}}`)
   }
@@ -45,11 +44,7 @@ function generateKeyFrames (frames) {
 }
 
 function clearAnimation (sheet) {
-  let pos = sheet.length - 1
-  while (pos >= 0) {
-    sheet.deleteRule(pos)
-    pos --
-  }
+  document.head.removeChild(sheet.ownerNode)
 }
 
 function addAnimationStyle (sheet, animation) {

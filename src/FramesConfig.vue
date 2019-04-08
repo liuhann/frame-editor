@@ -33,7 +33,7 @@
           <div class="btns" style="float:right;margin-top: -7px;">
             <el-button v-if="frame.percent !== 100" size="mini" icon="el-icon-plus"
             type="text" @click="appendFrame(index)"></el-button>
-            <el-button v-if="!(frame.percent === 100 || frame.percent === 0)" size="mini" icon="el-icon-delete" 
+            <el-button v-if="!(frame.percent === 100 || frame.percent === 0)" size="mini" icon="el-icon-delete"
             type="text" @click="removeFrame(index)"></el-button>
             <el-button v-if="currentFrameIndex === index" size="mini" icon="el-icon-arrow-down"
             type="text" @click="closeFrame"></el-button>
@@ -82,6 +82,14 @@ export default {
       activeNames: [],
       currentFrameIndex: 0,
       dialogVisible: false
+    }
+  },
+  watch: {
+    animation: {
+      deep: true,
+      handler () {
+        this.$emit('frameChange', this.currentFrameIndex)
+      }
     }
   },
   methods: {

@@ -1,10 +1,11 @@
 <template>
   <div id="app">
-    <frames-config :animation="animation" class="config"></frames-config>
+    <frames-config :animation="animation" class="config" @frame-change="frameChange"></frames-config>
     <div id="preview">
       <div id="box" :class="boxClass"></div>
       <div class="btns">
         <el-button @click="play" circle icon="el-icon-refresh"></el-button>
+        <el-button @click="upload" circle icon="el-icon-upload"></el-button>
       </div>
     </div>
   </div>
@@ -16,8 +17,9 @@ import { Button } from 'element-ui'
 import FramesConfig from './FramesConfig'
 import clone from 'clone'
 import FRAME from './model/frame'
-import { createSheet, addAnimationStyle, clearAnimation} from './keyframe'
-import { setTimeout } from 'timers';
+import { createSheet, addAnimationStyle, clearAnimation } from './keyframe'
+import { getElementStyle } from 'style-editor/src/utils/styles'
+import { setTimeout } from 'timers'
 
 Vue.use(Button)
 
@@ -27,7 +29,7 @@ export default {
     FramesConfig
   },
   computed: {
-    
+
   },
   data () {
     const frames = []
@@ -37,6 +39,7 @@ export default {
     frames.push(p100)
     return {
       boxClass: '',
+      frameStyle: '',
       animation: {
         name: 'myAnimation',
         duration: 600,
@@ -47,19 +50,29 @@ export default {
       }
     }
   },
+  watch: {
+  },
 
   mounted () {
-    this.sheet = createSheet()
+    this.getSheet()
   },
+
   methods: {
     play () {
-      console.log(this.sheet)
-      clearAnimation(this.sheet)
+      if (this.sheet) {
+        clearAnimation(this.sheet)
+      }
+      this.sheet = createSheet()
       addAnimationStyle(this.sheet, this.animation)
-      this.boxClass = ''
-      setTimeout( () => {
+      this.boxClass = 'hidden'
+      this.frameStyle = ''
+      setTimeout(() => {
         this.boxClass = this.animation.name
-      }, 400)
+      }, 1000)
+    },
+    frameChange (index) {
+      const frame = this.animation.frames[index]
+      this.frameStyle = getElementStyle(frame)
     }
   }
 }
@@ -109,6 +122,10 @@ html, body {
     right: 10px;
     top: 10px;
   }
+}
+
+.hidden {
+  display: none;
 }
 
 ::-webkit-scrollbar {
