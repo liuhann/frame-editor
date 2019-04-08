@@ -63,6 +63,7 @@ import FRAME from './model/frame'
 import cubicBeziers from './model/cubic-beziers'
 import ItemBlock from 'style-editor/src/components/ItemBlock'
 import EditLen from 'style-editor/src/components/EditLen'
+
 Vue.use(Button)
 Vue.use(ButtonGroup)
 Vue.use(InputNumber)
@@ -88,7 +89,7 @@ export default {
     animation: {
       deep: true,
       handler () {
-        this.$emit('frameChange', this.currentFrameIndex)
+        this.$emit('frame-change', this.currentFrameIndex)
       }
     }
   },

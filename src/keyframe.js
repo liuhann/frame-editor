@@ -19,6 +19,7 @@ function addKeyFrames (sheet, name, frames) {
   let pos = sheet.length
   const rule = '@keyframes ' + name + '{' + frames + '}'
   sheet.insertRule(rule, pos)
+  console.log(sheet)
 }
 
 /**
@@ -36,7 +37,6 @@ function addAnimation (sheet, animation) {
 
 function generateKeyFrames (frames) {
   const framesInline = []
-  debugger
   for (let frame of frames) {
     framesInline.push(`${frame.percent}%{${getElementStyle(frame)}}`)
   }

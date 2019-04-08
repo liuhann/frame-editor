@@ -2,10 +2,11 @@
   <div id="app">
     <frames-config :animation="animation" class="config" @frame-change="frameChange"></frames-config>
     <div id="preview">
-      <div id="box" :class="boxClass"></div>
+      <div id="box" class="box" :class="boxClass" :style="frameStyle"></div>
+      <div id="box-shadow" class="box"></div>
       <div class="btns">
         <el-button @click="play" circle icon="el-icon-refresh"></el-button>
-        <el-button @click="upload" circle icon="el-icon-upload"></el-button>
+        <el-button @click="share" circle icon="el-icon-share"></el-button>
       </div>
     </div>
   </div>
@@ -20,6 +21,7 @@ import FRAME from './model/frame'
 import { createSheet, addAnimationStyle, clearAnimation } from './keyframe'
 import { getElementStyle } from 'style-editor/src/utils/styles'
 import { setTimeout } from 'timers'
+import ky from 'ky'
 
 Vue.use(Button)
 
@@ -40,6 +42,7 @@ export default {
     return {
       boxClass: '',
       frameStyle: '',
+      animationName: '',
       animation: {
         name: 'myAnimation',
         duration: 600,
@@ -52,9 +55,14 @@ export default {
   },
   watch: {
   },
+  created () {
+    this.client = ky.extend({
+      prefixUrl: 'http://www.danke.fun/api/',
+      throwHttpErrors: false
+    })
+  },
 
   mounted () {
-    this.getSheet()
   },
 
   methods: {
@@ -63,13 +71,21 @@ export default {
         clearAnimation(this.sheet)
       }
       this.sheet = createSheet()
+      this.boxClass = ''
       addAnimationStyle(this.sheet, this.animation)
-      this.boxClass = 'hidden'
+      // this.boxClass = 'hidden'
       this.frameStyle = ''
       setTimeout(() => {
         this.boxClass = this.animation.name
       }, 1000)
     },
+
+    async share () {
+      const result = await this.client.put('animation', {
+        json: this.animation
+      }).json()
+    },
+
     frameChange (index) {
       const frame = this.animation.frames[index]
       this.frameStyle = getElementStyle(frame)
@@ -86,13 +102,6 @@ html, body {
   padding: 0;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   -webkit-tap-highlight-color: transparent;
-}
-#box {
-  background-color: #3e3e3e;
-  width: 160px;
-  height: 160px;
-  overflow: hidden;
-  box-sizing: border-box;
 }
 
 #app {
@@ -113,10 +122,26 @@ html, body {
 #preview {
   position: relative;
   flex: 1;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-items: center;
+  .box {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+  }
+  #box {
+    background-color: #3e3e3e;
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  #box-shadow {
+    background-color: #3e3e3e;
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
   .btns {
     position: absolute;
     right: 10px;
