@@ -3,10 +3,9 @@
     <frames-config :animation="animation" class="config" @frame-change="frameChange"></frames-config>
     <div id="preview">
       <div id="box" class="box" :class="boxClass" :style="frameStyle"></div>
-      <div id="box-shadow" class="box"></div>
       <div class="btns">
-        <el-button @click="play" circle icon="el-icon-refresh"></el-button>
-        <el-button @click="share" circle icon="el-icon-share"></el-button>
+        <el-button @click="play" type="text" size="medium" icon="el-icon-caret-right"></el-button>
+        <el-button @click="share" type="text" icon="el-icon-share"></el-button>
       </div>
     </div>
   </div>
@@ -14,7 +13,7 @@
 
 <script>
 import Vue from 'vue'
-import { Button } from 'element-ui'
+import { Button, Message } from 'element-ui'
 import FramesConfig from './FramesConfig'
 import clone from 'clone'
 import FRAME from './model/frame'
@@ -43,10 +42,12 @@ export default {
       boxClass: '',
       frameStyle: '',
       animationName: '',
+      frameIndex: -1,
       animation: {
         name: 'myAnimation',
         duration: 600,
         iteration: 1,
+        delay: 0,
         timing: 'linear',
         infinite: false,
         frames: frames
@@ -77,17 +78,31 @@ export default {
       this.frameStyle = ''
       setTimeout(() => {
         this.boxClass = this.animation.name
-      }, 1000)
+      }, 300)
     },
 
     async share () {
       const result = await this.client.put('animation', {
         json: this.animation
       }).json()
+      if (result.code === 409) {
+        Message({
+          message: '动画名称和现有的冲突',
+          type: 'warning'
+        })
+      } else {
+        Message({
+          message: '保存成功'
+        })
+      }
     },
 
     frameChange (index) {
-      const frame = this.animation.frames[index]
+      if (index != null) {
+        this.frameIndex = index
+      }
+      const frame = this.animation.frames[this.frameIndex]
+      console.log('frame change', frame)
       this.frameStyle = getElementStyle(frame)
     }
   }
@@ -95,57 +110,76 @@ export default {
 </script>
 
 <style lang="scss">
-
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
   -webkit-tap-highlight-color: transparent;
 }
 
 #app {
+  background-color: #252423;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
   color: #2c3e50;
   display: flex;
   height: 100%;
+  width: 100%;
+  overflow: hidden;
   .animation-config {
     overflow-y: auto;
     width: 320px;
     padding-right: 10px;
     background-color: #F5F5F5;
   }
+
+  #preview {
+    position: relative;
+    background-image: linear-gradient(90deg, #592D2D, #592D2D);
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: 160px 160px;
+    background-position: center;
+    background-repeat: no-repeat;
+    #box {
+      background-color: #FF4B4B;
+      width: 160px;
+      height: 160px;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .btns {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      .el-button--text {
+        color: #F6F4F2;
+        font-size: 20px;
+      }
+    }
+  }
+
 }
 
-#preview {
-  position: relative;
-  flex: 1;
-  .box {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-  }
-  #box {
-    background-color: #3e3e3e;
-    width: 160px;
-    height: 160px;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-  #box-shadow {
-    background-color: #3e3e3e;
-    width: 160px;
-    height: 160px;
-    overflow: hidden;
-    box-sizing: border-box;
-  }
-
-  .btns {
-    position: absolute;
-    right: 10px;
-    top: 10px;
+@media screen and (max-width: 600px) {
+  #app {
+    flex-direction: column-reverse;
+    .animation-config {
+      overflow-y: auto;
+      width: 100%;
+      padding-right: 10px;
+      background-color: #F5F5F5;
+      flex: 1;
+    }
+    #preview {
+      height: 240px;
+    }
   }
 }
 

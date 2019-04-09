@@ -4,7 +4,7 @@
     <item-block label="动画名称">
       <el-input size="mini" v-model="animation.name"></el-input>
     </item-block>
-    <edit-len label="时长" v-model="animation.duration" :with-unit="false"></edit-len>
+    <edit-len label="时长" v-model="animation.duration" :with-unit="false" :step="50"></edit-len>
     <item-block label="曲线">
       <el-select size="mini" v-model="animation.timing" placeholder="请选择">
         <el-option
@@ -15,7 +15,7 @@
         </el-option>
       </el-select>
     </item-block>
-    <edit-len label="延迟" v-model="animation.delay" :with-unit="false"></edit-len>
+    <edit-len label="延迟" v-model="animation.delay" :with-unit="false" :step="50"></edit-len>
     <edit-len label="次数" v-model="animation.iteration" :with-unit="false">
       <el-checkbox v-model="animation.infinite">循环</el-checkbox>
     </edit-len>
@@ -57,12 +57,10 @@
 <script>
 import Vue from 'vue'
 import { Button, ButtonGroup, InputNumber, Timeline, TimelineItem } from 'element-ui'
-import { EditTransform, EditClipPath } from 'style-editor'
+import { EditTransform, EditClipPath, ItemBlock, EditLen } from 'style-editor'
 import clone from 'clone'
 import FRAME from './model/frame'
 import cubicBeziers from './model/cubic-beziers'
-import ItemBlock from 'style-editor/src/components/ItemBlock'
-import EditLen from 'style-editor/src/components/EditLen'
 
 Vue.use(Button)
 Vue.use(ButtonGroup)
