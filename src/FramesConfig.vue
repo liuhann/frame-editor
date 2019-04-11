@@ -115,7 +115,10 @@ export default {
 <style lang="scss">
 .animation-config {
   .el-timeline {
-    padding-left: 12px;
+    padding-left: 5px;
+    .el-timeline-item__wrapper {
+      padding-left: 12px;
+    }
   }
   .time-line-item {
     text-align: left;
